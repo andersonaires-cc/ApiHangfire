@@ -26,5 +26,12 @@ namespace apiHangfire.Controllers
             return Ok();
         }
 
+        [HttpGet("/Delayedjob")]
+        public ActionResult CreateDelayedjob() 
+        {
+            _backgroundJobClient.Schedule(() => _jobTestService.Delayedjob(), TimeSpan.FromSeconds(60));
+            return Ok();
+        }
+
     }
 }
