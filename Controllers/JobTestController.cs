@@ -44,5 +44,14 @@ namespace apiHangfire.Controllers
             return Ok();
         }
 
+        [HttpGet("/ContinuationJob")]
+        public ActionResult CreateContinuationJob()
+        {
+            var parentJobId = _backgroundJobClient.Enqueue(() => _jobTestService.FireAndForgetJob());
+            _backgroundJobClient.ContinueJobWith(parentJobId, () => _jobTestService.ContinuationJob());
+
+            return Ok();
+        }
+
     }
 }
