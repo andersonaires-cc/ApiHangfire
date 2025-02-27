@@ -10,13 +10,17 @@ namespace apiHangfire.Controllers
     public class JobTestController : ControllerBase
     {
         private readonly IJobTestService _jobTestService;
-
-
         private readonly IBackgroundJobClient _backgroundJobClient;
-        public JobTestController(IJobTestService jobTestService, IBackgroundJobClient backgroundJobClient)
+        private readonly IRecurringJobManager _recurringJobManager;
+        public JobTestController
+        (
+            IJobTestService jobTestService, 
+            IBackgroundJobClient backgroundJobClient,
+            IRecurringJobManager recurringJobManager)
         {
             _jobTestService = jobTestService;
             _backgroundJobClient = backgroundJobClient;
+            _recurringJobManager = recurringJobManager;
         }
 
         [HttpGet("/FireAndForgetJob")]
@@ -30,6 +34,13 @@ namespace apiHangfire.Controllers
         public ActionResult CreateDelayedjob() 
         {
             _backgroundJobClient.Schedule(() => _jobTestService.Delayedjob(), TimeSpan.FromSeconds(60));
+            return Ok();
+        }
+
+        [HttpGet("/ReccuringJob")]
+        public ActionResult CreateReccuringJob()
+        {
+            _recurringJobManager.AddOrUpdate("jobId", () => _jobTestService.ReccuringJob(), Cron.Minutely);
             return Ok();
         }
 
